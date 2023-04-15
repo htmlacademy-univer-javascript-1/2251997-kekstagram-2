@@ -1,4 +1,4 @@
-import {getRandom, getLength} from './util';
+import {getRandom} from './util.js';
 
 let i=0;
 let g=0;
