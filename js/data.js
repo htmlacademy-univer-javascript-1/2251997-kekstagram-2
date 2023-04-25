@@ -57,16 +57,14 @@ function creatObject() {
       name: nameList[getRandom(0, nameList.length-1)]
     };
   };
-  const similarComments=Array.from({length:getRandom(1,3)},creatComment);
+  const similarComments=Array.from({length:getRandom(1,20)},creatComment);
   return {
     id: i,
-    url: `photos/${i}.img`,
+    url: `photos/${i}.jpg`,
     description: descriptionList[i - 1],
     likes: getRandom(15, 200),
     comments: similarComments,
   };
 }
 
-const similarObjects=Array.from({length:25}, creatObject);
-
-export {similarObjects};
+export {creatObject};
