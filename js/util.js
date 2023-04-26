@@ -13,9 +13,9 @@ const getRandom = function (min, max){
     }
     const randomNumber = Math.round (Math.random() * (max - min+1) + min);
     return randomNumber;
-  };
+  }
 };
-  
+
 const getLength = function (comment, maxLength){
   if (typeof comment!=='string'){
     throw new RangeError ('Задайте строку');
@@ -23,4 +23,6 @@ const getLength = function (comment, maxLength){
   return comment.length<=maxLength;
 };
 
-export {getRandom, getLength};
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export {getRandom, getLength, isEscapeKey};
