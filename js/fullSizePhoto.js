@@ -53,6 +53,22 @@ const createFullSizePhoto= function(miniature, likes, comments, description){
     commentsLoader.classList.add('hidden');
   }
 
+  let commentCurrentMinLength = 5;
+  let commentCurrentMaxLength = 10;
+
+  commentsLoader.addEventListener('click', () => {
+    comments.slice(commentCurrentMinLength, commentCurrentMaxLength).forEach((comment) => {
+      const newComment = createFullSizePhotoComment(comment);
+      fullSizePhotoSocialComments.append(newComment);
+    });
+    commentCurrentMinLength+=5;
+    commentCurrentMaxLength+=5;
+    if (commentsOfPhoto.querySelectorAll('li').length === comments.length) {
+      commentsLoader.classList.add('hidden');
+    }
+    sumOfComments.textContent = `${commentsOfPhoto.querySelectorAll('li').length} из ${comments.length} комментариев`;
+  });
+
   closeFullSizePhoto();
 };
 
