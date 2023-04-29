@@ -2,7 +2,7 @@ import {getRandom} from './util.js';
 
 let i=0;
 let g=0;
-const descriptionList=['Если вы хотите сделать что-то великое водин прекрасный день, помните: один прекрасный день - это сегодня',
+const descriptionList=['Если вы хотите сделать что-то великое в один прекрасный день, помните: один прекрасный день - это сегодня',
   'С междунарожным женским днем!',
   'С 8 марта!',
   'Пусть каждый день будет как праздник',
@@ -57,7 +57,7 @@ function creatObject() {
       name: nameList[getRandom(0, nameList.length-1)]
     };
   };
-  const similarComments=Array.from({length:getRandom(1,20)},creatComment);
+  const similarComments=Array.from({length:getRandom(1,200)},creatComment);
   return {
     id: i,
     url: `photos/${i}.jpg`,
