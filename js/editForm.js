@@ -1,4 +1,6 @@
 import {isEscapeKey} from './util.js';
+import {imgPreview} from './imageScale.js';
+import {slider} from './imageFilters.js';
 
 const imgOpenButton = document.querySelector('.img-upload__label');
 const imgUploadForm = document.querySelector('.img-upload__form');
@@ -12,6 +14,8 @@ const openFormSettings = function(evt){
   evt.preventDefault();
   document.body.classList.add('modal-open');
   editingForm.classList.remove('hidden');
+  slider.style.display = 'none';
+  document.getElementById('effect-none').checked = true;
 };
 
 const closeEditingForm = function(){
@@ -20,6 +24,9 @@ const closeEditingForm = function(){
   imgUploadInput.innerHTML = '';
   hashtags.value = '';
   textDescription.value = '';
+  imgPreview.style.transform = 'scale(1)';
+  imgPreview.classList = ['img-upload__preview'];
+  imgPreview.style.filter = '';
 };
 
 const addHandlersToCloseForm = function() {
