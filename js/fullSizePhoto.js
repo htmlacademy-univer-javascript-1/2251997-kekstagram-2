@@ -63,10 +63,10 @@ const createFullSizePhoto= function(miniature, likes, comments, description){
     });
     commentCurrentMinLength+=5;
     commentCurrentMaxLength+=5;
-    if (commentsOfPhoto.querySelectorAll('li').length === comments.length) {
+    if (fullSizePhotoSocialComments.querySelectorAll('li').length === comments.length) {
       commentsLoader.classList.add('hidden');
     }
-    sumOfComments.textContent = `${commentsOfPhoto.querySelectorAll('li').length} из ${comments.length} комментариев`;
+    socialCommentCount.textContent = `${fullSizePhotoSocialComments.querySelectorAll('li').length} из ${comments.length} комментариев`;
   });
 
   closeFullSizePhoto();
