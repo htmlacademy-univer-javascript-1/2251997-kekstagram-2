@@ -1,6 +1,7 @@
 import {isEscapeKey} from './util.js';
 import {imgPreview} from './imageScale.js';
-import {slider} from './imageFilters.js';
+import {slider, imageFilters} from './imageFilters.js';
+import {sendData} from './api.js';
 
 const imgOpenButton = document.querySelector('.img-upload__label');
 const imgUploadForm = document.querySelector('.img-upload__form');
@@ -9,16 +10,17 @@ const editingForm = imgUploadForm.querySelector('.img-upload__overlay');
 const hashtags = imgUploadForm.querySelector('.text__hashtags');
 const imgUploadInput = imgUploadForm.querySelector('.img-upload__input');
 const textDescription = imgUploadForm.querySelector('.text__description');
+const errorTemplate = document.querySelector('#error').content.querySelector('section');
+const successTemplate = document.querySelector('#success').content.querySelector('section');
+const submitButton = document.querySelector('.img-upload__submit');
 
-const openFormSettings = function(evt){
+const openFormSettings = function(evt) {
   evt.preventDefault();
   document.body.classList.add('modal-open');
   editingForm.classList.remove('hidden');
-  slider.style.display = 'none';
-  document.getElementById('effect-none').checked = true;
 };
 
-const closeEditingForm = function(){
+const closeEditingForm = function() {
   editingForm.classList.add('hidden');
   document.body.classList.remove('modal-open');
   imgUploadInput.innerHTML = '';
@@ -27,6 +29,8 @@ const closeEditingForm = function(){
   imgPreview.style.transform = 'scale(1)';
   imgPreview.classList = ['img-upload__preview'];
   imgPreview.style.filter = '';
+  slider.style.display = 'none';
+  document.getElementById('effect-none').checked = true;
 };
 
 const addHandlersToCloseForm = function() {
@@ -41,8 +45,65 @@ const addHandlersToCloseForm = function() {
   });
 };
 
+const blockSubmitButton = function() {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Отправляю...';
+};
+
+const unblockSubmitButton = function() {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Сохранить';
+};
+
+const showMessage = function(template) {
+  const message = template.cloneNode(true);
+  const removeErrorMessage = () => {
+    document.body.removeChild(message);
+  };
+
+  const windowRemove = function() {
+    removeErrorMessage();
+    document.removeEventListener('keydown', escRemove);
+  };
+
+  function escRemove(evt) {
+    if (message.parentNode) {
+      if (isEscapeKey(evt)) {
+        window.removeEventListener('click', windowRemove);
+        removeErrorMessage();
+      }}
+  }
+
+  document.body.append(message);
+  window.addEventListener('click', windowRemove, {once: true});
+
+  message.querySelector('div').addEventListener('click', (evt) => {
+    evt.stopPropagation();
+  });
+
+  message.querySelector('.error__button').addEventListener('click', () => {
+    removeErrorMessage();
+    window.removeEventListener('click', windowRemove);
+    document.removeEventListener('keydown', escRemove);
+  });
+
+  document.addEventListener('keydown', escRemove, {once: true});
+  unblockSubmitButton();
+};
+
+const closeSuccesForm = function() {
+  showMessage(successTemplate);
+  closeEditingForm();
+};
+
+const closeErrorForm = () => {
+  editingForm.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  showMessage(errorTemplate);
+};
+
 const re = /^((#[A-Za-zА-Яа-яЁё0-9]{1,19})\s*|)+$$/;
-const MAX_COMMENT_LENGTH = 5;
+const MAX_HASHTAG_NUMBER = 5;
 
 const pristine = new Pristine(imgUploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -66,7 +127,7 @@ const validateHashtagsSimilar = function() {
 
 const validateHashtagsMax = function() {
   const hashtagsList = hashtags.value.split(' ');
-  return !((hashtagsList.length > MAX_COMMENT_LENGTH));
+  return !((hashtagsList.length > MAX_HASHTAG_NUMBER));
 };
 
 const validateForm = function() {
@@ -76,7 +137,12 @@ const validateForm = function() {
 
   imgUploadForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
-    pristine.validate();
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      const formData = new FormData(evt.target);
+      sendData(closeSuccesForm, closeErrorForm, formData);
+    }
   });
 };
 
@@ -92,6 +158,7 @@ const imgOpenForm = function() {
 
   addHandlersToCloseForm();
   validateForm();
+  imageFilters();
 };
 
 export{imgOpenForm};

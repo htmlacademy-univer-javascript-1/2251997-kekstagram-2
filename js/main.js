@@ -1,12 +1,7 @@
-import {creatObject} from './data.js';
-import {creatMiniatures} from './miniatures.js';
 import {imgOpenForm} from './editForm.js';
 import {scaleHandlerSetting} from './imageScale.js';
-import {imageFilters} from './imageFilters.js';
+import {getData} from './api.js';
 
-const similarObjects=Array.from({length:25}, creatObject);
-
-creatMiniatures(similarObjects);
+getData();
 imgOpenForm();
 scaleHandlerSetting();
-imageFilters();
