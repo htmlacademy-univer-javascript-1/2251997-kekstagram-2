@@ -22,21 +22,6 @@ const openFullSizePhoto = function(){
   commentsLoader.classList.remove('hidden');
 };
 
-const closeFullSizePhoto = function(){
-  closeButton.addEventListener ('click', () => {
-    fullSizePhoto.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-    fullSizePhotoSocialComments.innerHTML = '';
-  });
-  document.addEventListener('keydown', (evt)=> {
-    if (isEscapeKey(evt)) {
-      fullSizePhoto.classList.add('hidden');
-      document.body.classList.remove('modal-open');
-      fullSizePhotoSocialComments.innerHTML = '';
-    }
-  }, {once: true});
-};
-
 const createFullSizePhoto= function(miniature, likes, comments, description){
   openFullSizePhoto();
   fullSizePhoto.querySelector('.big-picture__img img').src = miniature.querySelector('img').src;
@@ -56,7 +41,7 @@ const createFullSizePhoto= function(miniature, likes, comments, description){
   let commentCurrentMinLength = 5;
   let commentCurrentMaxLength = 10;
 
-  commentsLoader.addEventListener('click', () => {
+  const commentsLoadHandler = () => {
     comments.slice(commentCurrentMinLength, commentCurrentMaxLength).forEach((comment) => {
       const newComment = createFullSizePhotoComment(comment);
       fullSizePhotoSocialComments.append(newComment);
@@ -67,9 +52,24 @@ const createFullSizePhoto= function(miniature, likes, comments, description){
       commentsLoader.classList.add('hidden');
     }
     socialCommentCount.textContent = `${fullSizePhotoSocialComments.querySelectorAll('li').length} из ${comments.length} комментариев`;
+  };
+  commentsLoader.addEventListener('click', commentsLoadHandler);
+
+  closeButton.addEventListener ('click', () => {
+    fullSizePhoto.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    fullSizePhotoSocialComments.innerHTML = '';
+    commentsLoader.removeEventListener('click', commentsLoadHandler);
   });
 
-  closeFullSizePhoto();
+  document.addEventListener('keydown', (evt)=> {
+    if (isEscapeKey(evt)) {
+      fullSizePhoto.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+      fullSizePhotoSocialComments.innerHTML = '';
+      commentsLoader.removeEventListener('click', commentsLoadHandler);
+    }
+  }, {once: true});
 };
 
 export {createFullSizePhoto};

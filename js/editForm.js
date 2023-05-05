@@ -3,7 +3,7 @@ import {imgPreview} from './imageScale.js';
 import {slider, imageFilters} from './imageFilters.js';
 import {sendData} from './api.js';
 
-const imgOpenButton = document.querySelector('.img-upload__label');
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 const imgUploadForm = document.querySelector('.img-upload__form');
 const imgCloseButton = imgUploadForm.querySelector('.img-upload__cancel');
 const editingForm = imgUploadForm.querySelector('.img-upload__overlay');
@@ -14,10 +14,15 @@ const errorTemplate = document.querySelector('#error').content.querySelector('se
 const successTemplate = document.querySelector('#success').content.querySelector('section');
 const submitButton = document.querySelector('.img-upload__submit');
 
-const openFormSettings = function(evt) {
-  evt.preventDefault();
-  document.body.classList.add('modal-open');
-  editingForm.classList.remove('hidden');
+const openFormSettings = function() {
+  const file = imgUploadInput.files[0];
+  const fileName = file.name.toLowerCase();
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+  if (matches) {
+    imgPreview.querySelector('img').src = URL.createObjectURL(file);
+    document.body.classList.add('modal-open');
+    editingForm.classList.remove('hidden');
+  }
 };
 
 const closeEditingForm = function() {
@@ -47,7 +52,6 @@ const addHandlersToCloseForm = function() {
 
 const blockSubmitButton = function() {
   submitButton.disabled = true;
-  submitButton.textContent = 'Отправляю...';
 };
 
 const unblockSubmitButton = function() {
@@ -55,10 +59,11 @@ const unblockSubmitButton = function() {
   submitButton.textContent = 'Сохранить';
 };
 
-const showMessage = function(template) {
+const showMessage = function(template, buttonClass, cb) {
   const message = template.cloneNode(true);
   const removeErrorMessage = () => {
     document.body.removeChild(message);
+    cb();
   };
 
   const windowRemove = function() {
@@ -74,6 +79,7 @@ const showMessage = function(template) {
       }}
   }
 
+  editingForm.classList.add('hidden');
   document.body.append(message);
   window.addEventListener('click', windowRemove, {once: true});
 
@@ -81,7 +87,7 @@ const showMessage = function(template) {
     evt.stopPropagation();
   });
 
-  message.querySelector('.error__button').addEventListener('click', () => {
+  message.querySelector(buttonClass).addEventListener('click', () => {
     removeErrorMessage();
     window.removeEventListener('click', windowRemove);
     document.removeEventListener('keydown', escRemove);
@@ -91,15 +97,15 @@ const showMessage = function(template) {
   unblockSubmitButton();
 };
 
-const closeSuccesForm = function() {
-  showMessage(successTemplate);
-  closeEditingForm();
+const showSuccesForm = function() {
+  showMessage(successTemplate, '.success__button', () => closeEditingForm());
 };
 
-const closeErrorForm = () => {
-  editingForm.classList.add('hidden');
+const showErrorForm = () => {
   document.body.classList.remove('modal-open');
-  showMessage(errorTemplate);
+  showMessage(errorTemplate, '.error__button', () => {
+    editingForm.classList.remove('hidden');
+  });
 };
 
 const re = /^((#[A-Za-zА-Яа-яЁё0-9]{1,19})\s*|)+$$/;
@@ -141,13 +147,13 @@ const validateForm = function() {
     if (isValid) {
       blockSubmitButton();
       const formData = new FormData(evt.target);
-      sendData(closeSuccesForm, closeErrorForm, formData);
+      sendData(showSuccesForm, showErrorForm, formData);
     }
   });
 };
 
 const imgOpenForm = function() {
-  imgOpenButton.addEventListener('click', openFormSettings);
+  imgUploadInput.addEventListener('change', openFormSettings);
 
   hashtags.addEventListener('keydown', (evt) => {
     evt.stopPropagation();

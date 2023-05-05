@@ -4,7 +4,7 @@ const photoOtherUsers=document.querySelector('.pictures');
 const usersPhotoTemplate=document.querySelector('#picture').content.querySelector('a');
 const similarPhotosFragment=document.createDocumentFragment();
 
-const creatMiniatures=function(description){
+const createMiniatures=function(description){
   description.forEach((photo) => {
     const usersPhoto=usersPhotoTemplate.cloneNode(true);
     const otherUsersImg=usersPhoto.querySelector('.picture__img');
@@ -22,4 +22,4 @@ const creatMiniatures=function(description){
   photoOtherUsers.append(similarPhotosFragment);
 };
 
-export {creatMiniatures};
+export {createMiniatures};

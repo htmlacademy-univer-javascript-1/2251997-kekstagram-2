@@ -1,10 +1,13 @@
-import {creatMiniatures} from './miniatures.js';
-
-const getData = function() {
+const getData = function(callback) {
   fetch('https://26.javascript.pages.academy/kekstagram/data')
-    .then((response) => response.json())
-    .then((photoDescription) => {
-      creatMiniatures(photoDescription);
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`${response.status} ${response.statusText}`);
+    })
+    .then((datas) => {
+      callback(datas);
     });
 };
 

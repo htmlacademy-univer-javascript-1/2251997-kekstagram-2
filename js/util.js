@@ -1,28 +1,33 @@
-const getRandom = function (min, max){
-  if (min<0 || max<0){
-    throw new RangeError ('Задайте положительные числа');
-  }
-  if (typeof min!=='number' || typeof max!=='number'){
-    throw new RangeError ('Задайте число');
-  }
-  else {
-    if (max<=min){
-      const swap=max;
-      max=min;
-      min=swap;
-    }
-    const randomNumber = Math.round (Math.random() * (max - min+1) + min);
-    return randomNumber;
-  }
-};
-
-const getLength = function (comment, maxLength){
-  if (typeof comment!=='string'){
-    throw new RangeError ('Задайте строку');
-  }
-  return comment.length<=maxLength;
-};
-
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-export {getRandom, getLength, isEscapeKey};
+function debounce (callback, timeoutDelay = 500) {
+  let timeoutId;
+
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+}
+
+function throttle (callback, delayBetweenFrames) {
+  let lastTime = 0;
+
+  return (...rest) => {
+    const now = new Date();
+    if (now - lastTime >= delayBetweenFrames) {
+      callback.apply(this, rest);
+      lastTime = now;
+    }
+  };
+}
+
+function shuffle(array) {
+  const newArray = Array.from(new Set(array));
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+}
+
+export {isEscapeKey, debounce, throttle, shuffle};
