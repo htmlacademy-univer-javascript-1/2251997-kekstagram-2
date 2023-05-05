@@ -39,6 +39,7 @@ const filterOptions = (filterName, filterInfo) => {
 };
 
 const imageFilters = () => {
+  slider.style.display = 'none';
   noUiSlider.create(sliderElement, {
     range: {
       min: 0,
